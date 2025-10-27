@@ -60,20 +60,22 @@ def insert_incentives(cur, data, zip_code):
         make = v.get("make")
         model = v.get("model")
         year = v.get("year")
-        monthly = offer.get("amounts", [{}])[0].get("monthly")
+        amount_info = offer.get("amounts", [{}])[0]
+        monthly = amount_info.get("monthly")
+        term = amount_info.get("term") or 36  # default to 36 if missing
         due = offer.get("due_at_signing")
         msrp = offer.get("msrp")
 
         cur.execute(
             """
             INSERT INTO lease_programs
-              (make, model, year, payment, due_at_signing, msrp,
-               region, source, captured_at)
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,now())
+            (make, model, year, term_months, payment, due_at_signing, msrp,
+            region, source, captured_at)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,now())
             ON CONFLICT (make, model, year, payment, due_at_signing, msrp)
             DO NOTHING;
             """,
-            (make, model, year, monthly, due, msrp, zip_code, "MarketCheck"),
+            (make, model, year, term, monthly, due, msrp, zip_code, "MarketCheck"),
         )
 
 
@@ -113,7 +115,7 @@ def update_deal_index():
         """
         UPDATE lease_programs
         SET deal_index = ROUND(
-            (COALESCE(payment,0) + (COALESCE(due_at_signing,0)/36.0))
+            (COALESCE(payment,0) + (COALESCE(due_at_signing,0)/NULLIF(term_months,0)))
             / NULLIF(msrp,0), 6
         )
         WHERE msrp IS NOT NULL;
@@ -163,3 +165,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
