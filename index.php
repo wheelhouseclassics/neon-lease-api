@@ -25,13 +25,14 @@ if (!$db) {
 $make = $_GET['make'] ?? '';
 $max_payment = $_GET['max_payment'] ?? '';
 
-// --- Build query safely ---
+// --- Start base query ---
 $sql = "SELECT make, model, year, payment, due_at_signing, msrp, deal_index
         FROM lease_programs
         WHERE deal_index IS NOT NULL";
 $params = [];
 $idx = 1;
 
+// --- Add filters BEFORE ORDER/LIMIT ---
 if ($make !== '') {
   $sql .= " AND make ILIKE $" . $idx;
   $params[] = "%" . $make . "%";
@@ -44,10 +45,10 @@ if ($max_payment !== '') {
   $idx++;
 }
 
-// --- Final sort + limit ---
+// --- Now safely add sorting + limit ---
 $sql .= " ORDER BY deal_index ASC LIMIT 200;";
 
-// --- Run query ---
+// --- Run query safely ---
 if (!empty($params)) {
   $result = pg_query_params($db, $sql, $params);
 } else {
@@ -62,6 +63,6 @@ if (!$result) {
 $rows = pg_fetch_all($result) ?: [];
 pg_close($db);
 
-// --- Output ---
+// --- Return JSON ---
 echo json_encode(["records" => $rows], JSON_PRETTY_PRINT);
 ?>
