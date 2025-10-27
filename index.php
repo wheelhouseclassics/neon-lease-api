@@ -27,11 +27,9 @@ $make = $_GET['make'] ?? '';
 $max_payment = $_GET['max_payment'] ?? '';
 
 // Build query safely
-$sql = "SELECT make, model, year, payment, due_at_signing, msrp, deal_index
+$sql = "SELECT make, model, year, payment
         FROM lease_programs
-        WHERE deal_index IS NOT NULL
-        ORDER BY deal_index ASC
-        LIMIT 200;";
+        WHERE 1=1";
 
 $params = [];
 $idx = 1;
