@@ -65,9 +65,13 @@ def update_deal_index():
     conn = psycopg2.connect(DB_DSN)
     cur = conn.cursor()
     cur.execute("""
+        ALTER TABLE lease_programs
+        ADD COLUMN IF NOT EXISTS deal_index numeric(10,6);
+    """)
+    cur.execute("""
         UPDATE lease_programs
         SET deal_index = ROUND(
-            (COALESCE(payment,0) + (COALESCE(due_at_signing,0) / NULLIF(term_months,36)))
+            (COALESCE(payment,0) + (COALESCE(due_at_signing,0) / 36.0))
             / NULLIF(msrp,0), 6
         )
         WHERE msrp IS NOT NULL;
@@ -76,6 +80,7 @@ def update_deal_index():
     cur.close()
     conn.close()
     print("💡 deal_index updated.")
+
 
 def main():
     conn = psycopg2.connect(DB_DSN)
@@ -103,3 +108,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
