@@ -7,7 +7,7 @@ $api_key = "napi_tdic91bhx55200pko5ukwpb09qntqz5vzzk56cnzv23913o6j9elfyqsxqusnly
 $sql = "SELECT make, model, year, payment FROM lease_programs LIMIT 10;";
 $body = json_encode(["sql" => $sql]);
 
-$url = "https://api.neon.tech/v2/projects/bitter-scene-77398435/branches/br-red-sea-adw4083a/query";
+$url = "https://data-api.neon.tech/v2/projects/bitter-scene-77398435/branches/br-red-sea-adw4083a/query";
 
 $ch = curl_init($url);
 curl_setopt_array($ch, [
