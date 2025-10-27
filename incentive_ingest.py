@@ -22,7 +22,7 @@ QUERY = {
     "incentive_type": "lease",
     "term_range": "36-36",     # 3-year leases
     "zip": "93534",            # Lancaster, CA
-    "radius": 300,             # within 300 miles
+    "radius": 100,             # within 100 miles
     "make": (
         "Ford,Chevrolet,GMC,Buick,Cadillac,Honda,Toyota,Nissan,Lexus,Infiniti,"
         "Dodge,Ram,Jeep,Lincoln,Mercedes-Benz,BMW,Hyundai,Kia,Volkswagen,Subaru,Volvo"
@@ -113,4 +113,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
