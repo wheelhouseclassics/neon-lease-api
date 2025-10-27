@@ -20,17 +20,14 @@ URL = "https://api.marketcheck.com/v2/search/car/incentive/oem"
 QUERY = {
     "api_key": MC_KEY,
     "incentive_type": "lease",
-    "term_range": "36-36",              # only 3-year leases
-    "miles_per_year_range": "12000-12000",  # only 12k miles/year
-    "zip": "93534",                     # Lancaster, CA
-    "radius": 300,                      # within 300 miles
-    "state": "CA",
-    "dealer_type": "franchise",
+    "term_range": "36-36",     # 3-year leases
+    "zip": "93534",            # Lancaster, CA
+    "radius": 300,             # within 300 miles
     "make": (
         "Ford,Chevrolet,GMC,Buick,Cadillac,Honda,Toyota,Nissan,Lexus,Infiniti,"
         "Dodge,Ram,Jeep,Lincoln,Mercedes-Benz,BMW,Hyundai,Kia,Volkswagen,Subaru,Volvo"
     ),
-    "rows": 250,                        # grab more results
+    "rows": 250,
     "sort_by": "payment",
     "sort_order": "asc"
 }
@@ -116,3 +113,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
