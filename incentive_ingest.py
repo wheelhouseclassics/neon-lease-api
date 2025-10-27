@@ -112,6 +112,7 @@ def main():
     conn.close()
     print(f"🚀 Complete. Total reported results: {total}")
 
+    update_deal_index()
 
 if __name__ == "__main__":
     main()
