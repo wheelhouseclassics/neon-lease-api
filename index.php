@@ -1,16 +1,12 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-header("Content-Type: application/json");
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Origin: *");        // <-- critical for your Bluehost front-end
+header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: GET, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-// Connect to Neon
+// --- Connect to Neon ---
 $conn_str = "host=ep-cold-bar-ad3i9adr-pooler.c-2.us-east-1.aws.neon.tech
              port=5432
              dbname=neondb
@@ -25,21 +21,17 @@ if (!$db) {
   exit;
 }
 
-// Read URL parameters
+// --- Read filters from URL ---
 $make = $_GET['make'] ?? '';
 $max_payment = $_GET['max_payment'] ?? '';
 
-// Build query safely
+// --- Build query safely ---
 $sql = "SELECT make, model, year, payment, due_at_signing, msrp, deal_index
         FROM lease_programs
-        WHERE deal_index IS NOT NULL
-        ORDER BY deal_index ASC
-        LIMIT 200;";
-
+        WHERE deal_index IS NOT NULL";
 $params = [];
 $idx = 1;
 
-// Add filters
 if ($make !== '') {
   $sql .= " AND make ILIKE $" . $idx;
   $params[] = "%" . $make . "%";
@@ -52,11 +44,15 @@ if ($max_payment !== '') {
   $idx++;
 }
 
-// Sort and limit
-$sql .= " ORDER BY payment::numeric ASC LIMIT 50;";
+// --- Final sort + limit ---
+$sql .= " ORDER BY deal_index ASC LIMIT 200;";
 
-// Run query
-$result = pg_query_params($db, $sql, $params);
+// --- Run query ---
+if (!empty($params)) {
+  $result = pg_query_params($db, $sql, $params);
+} else {
+  $result = pg_query($db, $sql);
+}
 
 if (!$result) {
   echo json_encode(["error" => pg_last_error($db)]);
@@ -66,8 +62,6 @@ if (!$result) {
 $rows = pg_fetch_all($result) ?: [];
 pg_close($db);
 
-// Respond
-echo json_encode([
-  "records" => $rows
-], JSON_PRETTY_PRINT);
+// --- Output ---
+echo json_encode(["records" => $rows], JSON_PRETTY_PRINT);
 ?>
